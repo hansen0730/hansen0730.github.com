@@ -1,49 +1,77 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
-<head>
-  <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>small hai</title>
-  <meta name="author" content="hansen"/>
-  <meta name="viewport" content="width=device-width; initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="/assets/css/effector-wide.css">
-  <!-- RSS -->
-  <link rel="alternate" type="application/rss+xml" title="RSS for Cubian" href="/feed.xml">
-</head>
-<body>
-  <div class="container">
-	  <h1 class="sitename">Hansen<small> Just for fun</small></h1>
-      <div class="nav">
-<a href="/">主页</a>
-<a href="/downloads">下载</a>
-<a href="/tutorials">教程</a>
-<a href="/blog">博客</a>
-<a href="https://github.com/cubieplayer/Cubian/issues?state=open">问题提交</a>
-</div>
-<div class="wrapper">
-<ul class="postsList">
+---
+layout: main
+title: Jan Zheng Portfolio
+---
+
+<!-- post format:
+
+date      (01 January 2013)
+*icon     (external | other post types) *not implemented yet
+Title     (external link | post url)
+Object    (external link | post url) (image | youtube | vimeo)
+Summary   
+Tags
+ -->
+
+{% for post in site.posts %}
+{% if post.portfolio == false %} 
+{% if post.published == true %} 
+
+<a class="post-link" href="{% if post.external %} {{ post.external }} {% else %} {{ post.url }} {% endif %}">
+  <section class="post-list">
+    <div class="meta-data">
+      <span class="post-date">
+        {{ post.date | date: "%d %B %Y" }}      
+      </span> 
 
 
-<li><span>Sep 06, 2013</span> <a href="/2013/09/06/cubian-r5-for-a10-and-r2-for-a20-released">Cubian 发布</a></li>
+  <!--{% if post.external %}
+        <span class="external">External link</span>
+        <a class="permalink" href="{{ post.url }}">Permalink</a>
+      {% endif %} -->
+    </div>
 
-</ul>
+    <h1>{{ post.title }}</h1>
+
+    {% if post.image-path %}      
+     <img class="post-image" src="{{ post.image-path }}"></img>           
+    {% endif %}
+
+    {% if post.youtube %}<iframe width="550" height="452" src="{{ post.youtube }}" frameborder="0" allowfullscreen></iframe>{% endif %}
+    {% if post.vimeo %}<iframe src="{{ post.vimeo }}?title=0&amp;byline=0&amp;portrait=0&amp;color=0f314a" width="550" height="309" frameborder="0"></iframe>{% endif %}    
 
 
-</div>
+    <p class="post-summary">{{ post.summary }}</p>
+
+    {% if post.tags != null %}
+      {% assign tags_list = post.tags %} 
+        {% if tags_list.size > 0 %}
+        <ul class="post-taglist">
+
+          {% if tags_list.first[0] == null %}
+            {% for tag in tags_list %} 
+              <li>{{ tag }}</li>
+            {% endfor %}
+          {% else %}
+            {% for tag in tags_list %} 
+              <li>{{ tag[0] }}</li>
+            {% endfor %}
+          {% endif %}
+          
+        {% endif %}
+        {% assign tags_list = nil %}
+      </ul>
+    {% endif %}
+
+    <div class="clear"></div>
+  </section>
+</a>
+<div class="solidline"></div>
+{% endif %}
+{% endif %}
+{% endfor %}
 
 
-<footer>
-<p><small>hansen</p>
-</footer>
-</div>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-42738908-1', 'cubian.org');
-  ga('send', 'pageview');
+<!-- <script type="text/javascript" src="http://funkability.tumblr.com/js"></script> -->
 
-</script>
-</body>
-</html>
