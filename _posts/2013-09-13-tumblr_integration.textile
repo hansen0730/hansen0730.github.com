@@ -10,7 +10,7 @@ category : Code
 tags : [hello, blog]
 published : true
 portfolio : false
-comments : true
+comments : false
 ---
 
 我的第一张博客
