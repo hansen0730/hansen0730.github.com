@@ -9,7 +9,7 @@ author :
 markdown: rdiscount
 pygments: true
 permalink: /:year/:month/:title.html
-exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md", "notes.txt"]
+exclude: [".rvmrc", ".rbenv-version", "Rakefile", "changelog.md", "notes.txt"]
 auto: true
 
 
