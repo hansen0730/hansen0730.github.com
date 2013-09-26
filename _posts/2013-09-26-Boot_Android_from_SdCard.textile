@@ -1,0 +1,106 @@
+---
+layout: post
+title: Boot Android from SdCard
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- youtube: # -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : true
+---
+
+SD card Partition
+WARNING: At the start we need a 17 MB unallocated partition, required for flash sunxi-spl and u-boot.bin without corrupting the SD.
+
+partition   Size    Name    Fs  Description
+/dev/sdc1   16MiB   bootloader  VFAT    Files to assist the bootloader.
+/dev/sdc2   36MiB   boot    EXT4    ramdisk
+/dev/sdc3   500 MiB system  EXT4    Android's /system partition
+/dev/sdc4   Fill all space  extend  Extend Partition
+/dev/sdc5   300MiB  data    EXT4    
+/dev/sdc6   16 MiB  misc    EXT4    
+/dev/sdc7   36 Mib  recovery    EXT4    Android's recovery partition
+/dev/sdc8   125 MiB cache   EXT4    
+/dev/sdc9   16 MiB  private EXT4    
+/dev/sdc10  1-2 GiB UDISK   VFAT    
+
+card=/dev/sdc
+
+dd if=/dev/zero of=$card bs=1M count=1
+sfdisk -R $card
+
+cat <<EOT | sfdisk --in-order -uM $card
+17,16,c
+,36,83
+,500,83
+,,5
+,300,83
+,16,83
+,36,83
+,125,83
+,16,83
+,,83
+EOT
+
+mkfs.vfat -n bootloader ${card}1
+mkfs.ext4 -L boot       ${card}2
+mkfs.ext4 -L system     ${card}3
+mkfs.ext4 -L data       ${card}5
+mkfs.ext4 -L misc       ${card}6
+mkfs.ext4 -L recovery   ${card}7
+mkfs.ext4 -L cache      ${card}8
+mkfs.ext4 -L private    ${card}9
+mkfs.vfat -n UDISK      ${card}10
+
+remove huge_file option from EXT4 fs (android kernel not have this option!!!)
+tune2fs -O ^huge_file ${card}2
+tune2fs -O ^huge_file ${card}3
+tune2fs -O ^huge_file ${card}5
+tune2fs -O ^huge_file ${card}6
+tune2fs -O ^huge_file ${card}7
+tune2fs -O ^huge_file ${card}8
+tune2fs -O ^huge_file ${card}9
+
+mount -o loop bootloader.img bootloader
+
+mount ${card}1 /mnt/
+cp uImage  /mnt
+cp bootloader/script.bin /mnt
+
+cat >/mnt/uEnv.txt << EOT
+fexfile=script.bin
+kernel=uImage
+extraargs=root=/dev/mmcblk0p2 loglevel=8 rootwait console=ttyS0,115200 rw init=/init mac_addr=00:AE:99:A3:E4:AF
+boot_mmc=fatload mmc 0 0x43000000 ${fexfile}; fatload mmc 0 0x48000000 ${kernel}; bootm 0x48000000
+EOT
+
+cat >/mnt/uEnv_recovery.txt << EOT
+fexfile=script.bin
+kernel=uImage
+extraargs=root=/dev/mmcblk0p7 loglevel=8 rootwait console=ttyS0,115200 rw init=/init mac_addr=00:AE:99:A3:E4:AF
+boot_mmc=fatload mmc 0 0x43000000 ${fexfile}; fatload mmc 0 0x48000000 ${kernel}; bootm 0x48000000
+EOT
+
+umount /mnt
+umount bootloader
+
+mount ${card}2 /mnt
+tar -xpvf boot.tar -C /mnt
+
+sed -i "s/nandd/mmcblk0p3/g"  /mnt/init.sun4i.rc
+sed -i "s/nande/mmcblk0p5/g"  /mnt/init.sun4i.rc
+sed -i "s/nandh/mmcblk0p8/g"  /mnt/init.sun4i.rc
+sed -i "s/nandi/mmcblk0p10/g" /mnt/init.sun4i.rc
+umount /mnt
+
+mount ${card}3 /mnt
+tar -xpvf system.tar -C /mnt
+umount /mnt
+
+mount ${card}7 /mnt
+tar -xpvf recovery.tar -C /mnt
+sed -i "s/nandf/mmcblk0p6/g"  /mnt/ueventd.sun4i.rc
+umount /mnt
+sync
+
