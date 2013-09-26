@@ -1,0 +1,139 @@
+---
+layout: post
+title: Allwinner Bootloader
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- youtube: # -->
+<!-- vimeo: # -->
+category : Allwinner boot
+published : true
+portfolio : false
+comments : true
+---
+
+<1> Info
+    The Allwinner A10, A13, A20 and A31 boot as noted over several places, BROM is the first step in booting and is baked into chip itself. Moving from the BROM, Allwinner boots something called boot0 and boot1 from NAND. The magicvalue for the AllWinner bootloader in various places is 'eGON' and thus the bootloader shall be known as such.
+<2> eGON.BRM
+    The BROM bootloader has been extracted from the chip and can be found in hno's repository.. The magic signature is "eGON.BRM". The BROM seems to start at 0x4000. If the BROM has identified boot0 in NAND loads and executes it.
+<2.1> Header
+    u32, Jump to address
+    8 * u8, Magic "eGON.BRM" (no \n)
+    u32, length
+    4 * u8, Boot_vsn
+    4 * u8, eGON_vsn
+    8 * u8, platform information
+<3> eGON.BT0
+<3.1> public header
+    u32, Jump to address
+    8 * u8, Magic "eGON.BT0" (no \n)
+    32u, checksum for boot0
+    32u, length for boot0
+    32u, header size of boot0
+    4 * u8, header version
+    4 * u8, Boot_vsn
+    4 * u8, eGON_vsn
+    8 * u8, platform information
+<3.2> private header
+    u32, header size
+    4 * u8, header version
+    boot_dram_para_t, DRAM parameters
+    s32, uart port
+    2 * normal_gpio_cfg,
+    s32, enable_jtag (0 off, 1 on)
+    5 * normal_gpio_cfg, jtag_gpio
+    32 * normal_gpio_cfg, storage_gpio
+    u8 * 512 - (32 * sizeof(normal_gpio_cfg)), storage_data
+<3.3> Loading from MMC
+    Brom loads boot0 from nand or mmc and then chainloads boot1 from mmc. Examine the assembly source, it appears that
+    1. SD driver ressembles a very close similarity with u-boot's sunxi-mmc driver. So it's extremly likly those are identical
+    2. A SDcard is selected and checked if it is a valid card slot
+    3. SD/MMC reader is initialized
+    4. Read 2 (1 kiB) sectors starting from sector 38192 on the SD and check this against the magic value "eGON.BT1" (no \n)
+    5. Read the length stored in the header and check if it is the proper size (aligns in blocks of 512)
+    6. Read boot1 from the SD card using the length found
+    7. Verify the checksum of boot1
+    8. set eGON_vsn (even if it failed the checksum)
+    9. Close the SD Card
+<4> eGON.BT1
+<4.1> public header
+    u32, Jump to address
+    8 * u8, Magic "eGON.BT1" (no \n)
+    32u, checksum for boot0
+    32u, length for boot0
+    32u, header size of boot0
+    4 * u8, header version
+    4 * u8, Boot_vsn
+    4 * u8, eGON_vsn
+    8 * u8, platform information
+<4.2> private header
+    u32, header size
+    4 * u8, header version
+    s32, uart port
+    2 * normal_gpio_cfg, UART gpio config
+    boot_dram_para_t, DRAM parameters
+    32k * u8, script_buf (fex)
+    boot_core_para_t, boot core parameters
+    s32, twi_port
+    2 * normal_gpio_cfg, twi gpio config
+    s32, debug enable (0 off, 1 on)
+    s32, hold_key_min
+    s32, hold_key_max
+    u32, work_mode
+    u32, storage_type (0 = nand, 1 = sdcard, 2 = SPI-NOR
+    32 * normal_gpio_cfg, storage_gpio
+    u8 * 512 - (32 * sizeof(normal_gpio_cfg)), storage_data
+
+====== BROM / ffff0000.s =====
+
+ffff0000:   ea000008    b   reset       ; reset
+ffff0004:   ea000006    b   unimplemented   ; _undefined_instruction
+ffff0008:   ea000005    b   unimplemented   ; _software_interrupt
+ffff000c:   ea000004    b   unimplemented   ; _prefetch_abort
+ffff0010:   ea000003    b   unimplemented   ; _data_abort
+ffff0014:   ea000002    b   unimplemented   ; _not_used
+ffff0018:   ea000003    b   irq     ; _irq
+ffff001c:   ea000000    b   unimplemented   ; _fiq
+ffff0020:   ea000005    b   fel_setup   ; FEL
+
+unimplemented:
+ffff0024:   eafffffe    b   unimplemented
+
+#define BROM 0xffff4000
+
+reset:
+ffff0028:   e59ff110    ldr pc, =BROM
+
+irq:
+ffff002c:   e24ee004    sub lr, lr, #4
+ffff0030:   e92d5fff    push    {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, lr}
+ffff0034:   eb00073c    bl  interrupt_handler
+ffff0038:   e8fd9fff    ldm sp!, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, pc}^
+
+fel_setup:
+ffff003c:   e3a020d2    mov r2, #210    ; 0xd2
+
+................
+
+void memset(r0 = dest, r1 = value, r2 = size);
+memset:
+ffff0174:   e92d4030    push    {r4, r5, lr}
+ffff0178:   e1a03000    mov r3, r0
+ffff017c:   ea000000    b   0xffff0184
+ffff0180:   e4c31001    strb    r1, [r3], #1
+ffff0184:   e1b04002    movs    r4, r2
+ffff0188:   e2422001    sub r2, r2, #1
+ffff018c:   1afffffb    bne 0xffff0180
+ffff0190:   e8bd8030    pop {r4, r5, pc}
+
+memcpy:
+ffff014c:   e92d4070    push    {r4, r5, r6, lr}
+ffff0150:   e1a03000    mov r3, r0
+ffff0154:   e1a04001    mov r4, r1
+ffff0158:   ea000001    b   0xffff0164
+ffff015c:   e4d45001    ldrb    r5, [r4], #1
+ffff0160:   e4c35001    strb    r5, [r3], #1
+ffff0164:   e1b05002    movs    r5, r2
+ffff0168:   e2422001    sub r2, r2, #1
+ffff016c:   1afffffa    bne 0xffff015c
+ffff0170:   e8bd8070    pop {r4, r5, r6, pc}
+
