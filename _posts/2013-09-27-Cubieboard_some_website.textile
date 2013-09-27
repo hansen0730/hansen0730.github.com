@@ -1,14 +1,13 @@
 ---
 layout: post
-title: Allwinner Bootloader
+title: Some website about Cubieboard
 <!-- external: # -->
 <!-- image-path: /assets/# -->
 <!-- youtube: # -->
 <!-- vimeo: # -->
-category : Allwinner boot
 published : true
 portfolio : false
-comments : true
+comments : false
 ---
 
 http://mirror.symnds.com/software/cubie/
