@@ -1,0 +1,25 @@
+---
+layout: post
+<!-- external: # -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : false
+---
+
+We often use JFFS2 binary images for embedded system, generating them with mkfs.jffs2.
+
+In some instances, it could also be good to mount a jffs2 image into your PC to modify it directly.
+
+To do that,  type the following commands as root in a linux shell:
+modprobe mtdcore
+modprobe jffs2
+modprobe mtdram
+modprobe mtdchar
+modprobe mtdblock
+dd if=image-jffs2 of=/dev/mtd0
+mount /dev/mtdblock0 mnt
+
+If your image is larger than the default kernel size (4MB in my case), you can try to adjust the mtdram device size with the total_size parameters. when inserting the mtdram module, e.g.:
+modprobe mtdram total_size=8096 
+where total_size is expressed in KB
