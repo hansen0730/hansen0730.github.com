@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Mounting a JFFS2 image in a Linux_PC 
+title: Mounting a JFFS2 image in a Linux PC 
 <!-- external: # -->
 <!-- vimeo: # -->
 published : true
