@@ -15,3 +15,5 @@ http://mirror.symnds.com/software/cubie/
 http://dl.linux-sunxi.org/
 
 http://dl.cubieboard.org/
+
+http://dl.cubieforums.com/
