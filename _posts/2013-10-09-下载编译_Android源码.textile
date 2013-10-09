@@ -54,11 +54,12 @@ error: could not verify the tag 'v1.7.5'
 https://android.googlesource.com/new-password
 vim ~/.netrc
 
-    Other Way
+======= Other Way
 1 codeaurora
 curl "http://php.webtutor.pl/en/wp-content/uploads/2011/09/repo" > ~/bin/repo-new
 chmod a+x ~/bin/repo-new
 cd WORKING_DIRECTORY
+
 repo-new init -u git://codeaurora.org/platform/manifest.git -b gingerbread , and add "--repo-url=git://codeaurora.org/tools/repo.git" ?
 repo-new sync
 other branch see: https://www.codeaurora.org/cgit/quic/la/platform/manifest/refs/
