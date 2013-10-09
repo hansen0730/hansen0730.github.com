@@ -1,0 +1,53 @@
+---
+layout: post
+title: 下载编译Android源码 
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : false
+---
+
+Installing some soft
+1 Install curl：         sudo apt-get install curl
+2 Install git-core：        sudo apt-get install git-core
+
+Installing Repo
+1 在用户目录下创建一个~/bin目录，并添加到环境变量中（要将git软件下载安装在此目录，在别的目录运行可能会找不到此软件，所以要添加到环境变量中）
+$ mkdir ~/bin
+$ PATH=~/bin:$PATH 
+
+2 下载repo脚本并修改权限为可执行
+$ curl https://dl-ssl.google.com/dl/googlesource/git-repo/repo > ~/bin/repo
+$ chmod a+x ~/bin/repo
+
+Initializing a Repo client
+1 创建一个保存android源码的目录，修改为最大权限，并进入到该目录下
+$ mkdir /opt/android4.2
+$ sudo chmod –R 777 /opt/android4.2
+$ cd /opt/android4.2 
+
+2 初始化repo，并选择要下载的分支（版本）
+$ repo init -u https://android.googlesource.com/platform/manifest
+$ repo init -u https://android.googlesource.com/platform/manifest -b android-4.2_r1
+备注1：在这过程中需要输入你的姓名、邮箱等信息
+备注2：查询android版本信息，参考 https://android.googlesource.com/platform/manifest/+refs
+
+Getting the files
+$ repo sync
+
+$ vim /etc/hosts
+
+增加下面内容，保存（提前保存好）：
+74.125.31.82 www.googlesource.com
+74.125.31.82 android.googlesource.com
+203.208.46.172 cache.pack.google.com
+59.24.3.173cache.pack.google.com
+74.125.237.1 dl-ssl.google.com
+
+gpg: Signature made Fri 10 Jun 2011 07:52:20 AM CST using DSA key ID 920F5C65
+gpg: Can't check signature: public key not found
+error: could not verify the tag 'v1.7.5'
+出错原因是曾使用repo sync从其它库sync过代码，删掉~/.repoconfig即可：
+
