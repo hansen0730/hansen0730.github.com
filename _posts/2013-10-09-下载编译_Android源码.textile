@@ -52,3 +52,4 @@ error: could not verify the tag 'v1.7.5'
 出错原因是曾使用repo sync从其它库sync过代码，删掉~/.repoconfig即可：
 
 https://android.googlesource.com/new-password
+vim ~/.netrc
