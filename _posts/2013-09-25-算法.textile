@@ -1,13 +1,9 @@
 ---
 layout: post
 title: 计算机科学中最重要的32个算法
-summary: 算法
 <!-- external: # -->
-<!-- image-path: /assets/# -->
-<!-- youtube: # -->
 <!-- vimeo: # -->
 category : Code
-tags : [hello, blog]
 published : true
 portfolio : false
 comments : false
