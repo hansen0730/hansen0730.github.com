@@ -24,3 +24,21 @@ mount /dev/mtdblock0 mnt
 If your image is larger than the default kernel size (4MB in my case), you can try to adjust the mtdram device size with the total_size parameters. when inserting the mtdram module, e.g.:
 modprobe mtdram total_size=8096 
 where total_size is expressed in KB
+
+作为补充:
+user@computer: modprobe mtdblock
+modprobe jffs2
+modprobe mtdram total_size=65536 erase_size=256
+mknod /tmp/mtdblock0 b 31 0
+dd if=/pathtoimage/rootfs.jffs2 of=/tmp/mtdblock0
+mount -t jffs2 /tmp/mtdblock0 /mnt
+
+===== ysffs2 file system
+从Google代码站中下载 unyaffs 。
+如果上面的可执行文件在你的系统不工作的话，你也可以下载 源代码 并重新编译它。
+gcc -o unyaffs unyaffs.c
+sudo chmod +x /complete/directory/path/to/unyaffs
+然后使用这个命令来拆解 YAFF2 镜像文件：
+mkdir image
+cd image
+unyaffs ../system.img
