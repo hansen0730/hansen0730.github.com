@@ -44,5 +44,28 @@ reboot
 sudo /etc/init.d/samba restart
 
 3. tftp
+sudo apt-get install xinetd tftp tftpd
+sudo vim /etc/xinetd.d/tftp
+service tftp
+{
+    socket_type     = dgram
+    protocol        = udp
+    wait            = yes
+    user            = hansen
+    server          = /usr/sbin/in.tftpd
+    server_args     = -s /home/hansen/tftp
+    disable         = no
+    per_source      = 11
+    cps             = 100 2
+    flags           = IPv4
+}
 
+chmod 777 /home/hansen/tftp
+sudo /etc/init.d/xinetd restart
+netstat -a | grep tftp
 
+other terminal: tftp 127.0.0.1
+tftp> get file
+tftp> q
+
+tftp -r file_name -l file_name -g <your IP> 69
