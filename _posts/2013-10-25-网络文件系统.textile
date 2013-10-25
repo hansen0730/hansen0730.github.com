@@ -1,0 +1,48 @@
+---
+layout: post
+title: 网络文件系统 
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : true
+---
+
+1. NFS
+sudo apt-get install nfs-kernel-server
+also: portmap nfs-common
+sudo vim /etc/exports
+   add: /home/hansen/nfs_root *(rw,sync,no_root_squash)
+chmod 777 /home/hansen/nfs_root
+sudo /etc/init.d/portmap restart
+sudo /etc/init.d/nfs-kernel-server restart
+showmount -e
+
+sudo mount -t nfs localhost:/home/hansen/nfs_root /mnt
+sudo umount /mnt
+
+sudo -t nfs -o nolock <your_IP>:/home/hansen/nfs_root /tmp
+
+2. SMB
+sudo apt-get install samba smbfs
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.backup
+sudo vim /etc/samba/smb.conf
+    [Share] 
+        comment = Shared Folder with username and password 
+        path = /home/hansen
+        public = yes
+        writable = yes 
+        valid users = hansen
+        create mask = 0700 
+        directory mask = 0700 
+        force user = hansen 
+        force group = hansen 
+        available = yes 
+        browseable = yes
+reboot
+sudo /etc/init.d/samba restart
+
+3. tftp
+
+
