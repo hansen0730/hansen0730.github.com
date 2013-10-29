@@ -1,0 +1,17 @@
+---
+layout: post
+title: Linux KVM 安装 windows 
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : true
+---
+
+qemu-img create -f qcow2 windows.img 10G
+or dd
+
+qemu-system-x86_64 -hda windows.img -cdrom ***.iso -boot d -m 1024
+
+qemu-system-x86_64 windows.img -m 1024 -cdrom ***.iso
