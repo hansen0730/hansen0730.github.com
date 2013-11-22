@@ -21,6 +21,7 @@ comments : true
 mkimage -A ARM -O linux -T script -C none -a 0 -e 0 -n "auto_script" -d auto_script   aml_autoscript
 其中，auto_script 就是uboot命令的组合了(简单的， 第一步可以就在里面写help， 试试就知道效果)， 想干嘛干嘛～
 
+未完 待续
 3. kernel
 
 4. file system
