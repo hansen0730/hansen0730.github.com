@@ -1,0 +1,27 @@
+---
+layout: post
+title: 天猫魔盒 破解 工作 
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : true
+---
+
+1. 硬件
+还好PCB板提供了TTL接口，根据串口信息可知是 Amlogic 8726 MX
+接出 Linux_RX  Linux_TX  GND
+
+2. u-boot
+板子从SPI Nor Flash 启动, 然后读取SD卡， USB的启动文件,
+在此， 可以从SD启动。
+将SD卡分为 fat32， ext3分区。
+在fat分区内，放入 aml_autoscript 文件， 由mkimage产生
+mkimage -A ARM -O linux -T script -C none -a 0 -e 0 -n "auto_script" -d auto_script   aml_autoscript
+其中，auto_script 就是uboot命令的组合了(简单的， 第一步可以就在里面写help， 试试就知道效果)， 想干嘛干嘛～
+
+3. kernel
+
+4. file system
+
