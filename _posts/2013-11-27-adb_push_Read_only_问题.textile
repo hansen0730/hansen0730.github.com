@@ -1,0 +1,21 @@
+---
+layout: post
+title: 使用adb push返回Read only file system解决办法 
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : true
+---
+
+adb -s device
+
+adb push -r ***
+
+adb install
+
+adb shell
+mount -o remount rw /
+exit
+adb remount
