@@ -252,3 +252,10 @@ wc -l *.c
 head -n 1000 flist | tail -n 10
 for i in `seq 0 255`; do echo 192.168.0.$i; done
 
+sed去除文件中注释
+以下命令将打印从包含 ”BEGIN” 的行开始，并且以包含 ”END” 的行结束的文本块：
+$ sed -n -e ’/BEGIN/,/END/p’ /my/test/file | more
+去掉注释<!– –>使用
+$ sed -i ‘/<!–/,/–>/d’ /my/test/file
+
+
