@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Mounting a JFFS2 image in a Linux PC 
+title: Mounting a JFFS2 image in a Linux PC 文件系统挂载
 <!-- external: # -->
 <!-- vimeo: # -->
 published : true
@@ -42,3 +42,7 @@ sudo chmod +x /complete/directory/path/to/unyaffs
 mkdir image
 cd image
 unyaffs ../system.img
+
+===== Ramfs
+mount -o loop ramfile  dir/
+
