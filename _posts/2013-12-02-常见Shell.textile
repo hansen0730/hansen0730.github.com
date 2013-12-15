@@ -258,6 +258,3 @@ $ sed -n -e ’/BEGIN/,/END/p’ /my/test/file | more
 去掉注释<!– –>使用
 $ sed -i ‘/<!–/,/–>/d’ /my/test/file
 
-vim 插件
-http://vim-scripts.org/vim/scripts.html
-

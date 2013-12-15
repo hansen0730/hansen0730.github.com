@@ -95,3 +95,61 @@ function TitleDet()
     call AddTitle()
 endfunction
 au BufWritePost *.c :call UpdateTitle()
+
+4. #include file
+gf  open file
+also you can set path:
+set path=.,/usr/include,
+set path+=/your_project_dir/**
+
+5. Script website 
+http://vim-scripts.org/vim/scripts.html
+
+6. Formate file
+gg=G
+
+7. work with Gcc
+:cc 3 ; goto err 3
+:cnext ; goto next err
+:cprevious
+:clist! ; list all err
+
+8. map
+list all map key
+:map
+
+9. file exploer
+:edit some_dir
+
+10. tags
+ctags -R
+:ts ; for multiple choice
+
+11. lock screen
+<C-s>
+<C-q>
+
+12. Multi-tab
+vim version>7
+:tabnew
+gt, gT ; switch
+:tabc ; close tab(:q)
+:tabo ; close all
+:tabs ; view all opened tab
+
+13. Multi-windows
+:vs
+:sp
+; Resize window
+<C-w>=  ; such as width and high
+<C-w><  ; cut width
+<C-w>>
+<C-w>-  ; cut high
+<C-w>+
+; window Position
+<C-w>h  ;Left
+<C-w>l
+<C-w>j
+<C-w>k
+
+:w , :saveas  diff !!!
