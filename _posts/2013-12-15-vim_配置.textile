@@ -1,0 +1,97 @@
+---
+layout: post
+title: vim 配置 
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : false
+---
+
+1. vundle
+git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+
+set nocompatible
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+Bundle 'vundle'
+Bundle 'winmanager'
+Bundle 'SuperTab'
+Bundle 'The-NERD-tree'
+Bundle 'taglist.vim'
+
+2. cscope
+
+if has("cscope")
+    set csprg=/usr/bin/cscope
+    set cscopetag
+    set csto=1
+    set cst
+    set nocsverb
+    if filereadable("cscope.out")
+        cs add cscope.out
+    endif
+
+    set csverb
+    set cscopeverbose
+
+"   's'   symbol: find all references to the token under cursor
+"   'g'   global: find global definition(s) of the token under cursor
+"   'c'   calls:  find all calls to the function name under cursor
+"   't'   text:   find all instances of the text under cursor
+"   'e'   egrep:  egrep search for the word under cursor
+"   'f'   file:   open the filename under cursor
+"   'i'   includes: find files that include the filename under cursor
+"   'd'   called: find functions that function under cursor calls
+
+    set cscopequickfix=c-,d-,i-,t-,e-
+
+    nmap <space>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <space>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <space>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <space>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <space>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <space>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <space>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+    nmap <space>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+endif
+
+3. Automatically add files information 
+
+nmap hd :call TitleDet()<cr>'s
+function AddTitle()
+    call append(0,"/*")
+    call append(1," *  File name: ".expand("%:t"))
+    call append(2," *")
+    call append(3," *  Create date: ".strftime("%Y-%m-%d %H:%M"))
+    call append(4," *  Modified date: ".strftime("%Y-%m-%d %H:%M"))
+    call append(5," *  Author: Hansen (fhz0730@gmail.com)")
+    call append(6," *  Comment: ")
+    call append(7," */")
+    call append(8,"  ")
+endf
+
+" 更新最近修改时间和文件名
+function UpdateTitle()
+" 注意，这里从１开始为第１行
+    call setline(1," *  File nam : ".expand("%:t")) 
+    call setline(4," *  Modified date: ".strftime("%Y-%m-%d %H:%M"))
+endf
+" 判断前10行代码里面，是否有modified这个单词，
+" 如果没有的话，代表没有添加过作者信息，需要新添加；
+" 如果有的话，那么只需要更新即可
+function TitleDet()
+    let n=1
+    " 默认为添加
+    while n < 10
+        let line = getline(n)
+        if line =~ '^*Modified.*$'
+            call UpdateTitle()
+            return
+        endif
+        let n = n + 1
+    endwhile
+    call AddTitle()
+endfunction
+au BufWritePost *.c :call UpdateTitle()
