@@ -126,8 +126,8 @@ ctags -R
 :ts ; for multiple choice
 
 11. lock screen
-<C-s>
-<C-q>
+Ctrl-s
+Ctrl-q
 
 12. Multi-tab
 vim version>7
@@ -141,15 +141,15 @@ gt, gT ; switch
 :vs
 :sp
 ; Resize window
-<C-w>=  ; such as width and high
-<C-w><  ; cut width
-<C-w>>
-<C-w>-  ; cut high
-<C-w>+
+C-w=  ; such as width and high
+C-w<  ; cut width
+C-w>
+C-w-  ; cut high
+C-w+
 ; window Position
-<C-w>h  ;Left
-<C-w>l
-<C-w>j
-<C-w>k
+C-wh  ;Left
+C-wl
+C-wj
+C-wk
 
 :w , :saveas  diff !!!
