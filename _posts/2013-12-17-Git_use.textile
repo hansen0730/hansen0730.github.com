@@ -1,0 +1,92 @@
+---
+layout: post
+title: Git 使用
+<!-- external: # -->
+<!-- image-path: /assets/# -->
+<!-- vimeo: # -->
+published : true
+portfolio : false
+comments : true
+---
+
+1. 服务器搭建
+依赖软件包： openssh-server (openssh-client)  git-core  gitosis(不使用apt-get, 自己下载)
+
+/etc/ssh/sshd_config 可以修改ssh端口号，密钥检测规则等
+
+ssh-keygen -t rsa 产生密钥公钥对 ~/.ssh/***
+
+安装 gitosis
+mkdir ~/gitosis_setup
+cd ~/gitosis_setup
+git clone https://github.com/res0nat0r/gitosis.git (这个网址不一定行)
+cd gitosis
+
+为gitosis创建系统用户git
+sudo useradd -m git
+sudo passwd git
+
+建立Git仓库目录
+sudo mkdir /home/git_base
+sudo chown git:git /home/git_base
+sudo chmod 700 /home/git_base  (除了git以外的用户对此目录无任何权限)
+
+初始化一下服务器的git用户
+git config --global user.name "hansen"
+git config --global user.email "fhz0730@gmail.com"
+
+sudo python setup.py install (如果出错，可能要安装python-setuptools)
+
+切换到git用户
+su git
+默认状态下，gitosis会将git仓库放在git用户的home下,所以做一个链接到/home/repo
+ln -s /home/git_base /home/git/repositories
+exit
+
+拷贝之前生成的公钥到服务器
+让gitosis work
+在gitosis目录下：sudo -H -u git giosis-init < id_rsa.pub
+
+gitosis也是通过一个git仓库来管理配置文件
+在 /home/git_base/gitosis-admin.git
+让该目录的 hooks/post-updata 可执行 chmod
+
+2. 修改配置仓库的配置
+在客户机上获取 配置仓库
+git clone git@IP_addr:/home/git_base/gitosis-admin.git
+cd gitosis-admin
+首先把 该机的公钥 拷贝到 keydir/
+其次，修改gitosis.conf
+在 [group gitosis-admin] 下面的members 子项 加入 该机的用户和IP （例如：hansen@IP_addr）
+这样该机的hansen就是git服务器的管理员了（当然，公钥要一直不变）
+
+3. 新建git仓库
+以管理员的身份修改gitosis配置仓库，增加新仓库
+cd gitosis-admin
+修改gitosis.conf, 增加
+[group test_pro]
+writeable=test_pro
+members=server@PC hansen@IP (示例而已)
+
+mkdir test_pro
+cd test_pro/
+git init
+echo "This is test Git" > README
+git add .
+git commit -am "first"
+git remote add origin git@IP_addr:test_pro.git
+git push origin master
+
+4. 添加已有的git仓库
+例如ALSA库
+git clone git://android.git.kernel.org/platform/external/alsa-lib.git
+得到纯仓库
+git clone --bare alsa-lib  alsa-lib.git
+
+然后可以用各种方式 放入git服务器上的/home/git_base
+chown -R git:git alsa-lib.git
+
+最后修改gitosis.conf 告知gitosis含有这个新加的仓库
+
+这一切都可以在客户机上运行（因为之前已经成为管理员了。。。）
+
