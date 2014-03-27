@@ -9,6 +9,11 @@ portfolio : false
 comments : true
 ---
 
+Server Side:
+/bin/su -c '/usr/bin/autossh -M 5678 -NR 19999:localhost:22 user_name@123.123.123.123' - user_name
+Client Side:
+ssh localhost -p 19999
+
 检查远程端口是否对bash开放：
 echo >/dev/tcp/8.8.8.8/53 && echo "open"
 
