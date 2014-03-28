@@ -9,6 +9,11 @@ portfolio : false
 comments : true
 ---
 
+Web Shell:
+wget http://ftp.cn.debian.org/debian/pool/main/s/shellinabox/shellinabox_2.14-1_amd64.deb
+Configure file:
+/etc/default/shellinabox
+
 Server Side:
 /bin/su -c '/usr/bin/autossh -M 5678 -NR 19999:localhost:22 user_name@123.123.123.123' - user_name
 Client Side:
