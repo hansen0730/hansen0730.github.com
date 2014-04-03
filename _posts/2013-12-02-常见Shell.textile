@@ -9,6 +9,14 @@ portfolio : false
 comments : true
 ---
 
+.ssh/config file:
+TCPKeepAlive=yes
+ServerAliveInterval=15
+ServerAliveCountMax=6
+StrictHostKeyChecking=no
+Compression=yes
+ForwardAgent=yes
+
 Web Shell:
 wget http://ftp.cn.debian.org/debian/pool/main/s/shellinabox/shellinabox_2.14-1_amd64.deb
 Configure file:
